@@ -1,1 +1,582 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Biblioteca Profesional | Sistema de Préstamos</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
+        body {
+            font-family: 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            background: linear-gradient(135deg, #0b3b5f 0%, #1a4c7a 100%);
+            color: #ffffff;
+            padding: 30px 20px;
+            line-height: 1.5;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 30px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-shadow: 2px 2px 6px rgba(0,0,0,0.3);
+            background: rgba(255,255,255,0.08);
+            display: inline-block;
+            width: auto;
+            padding: 12px 28px;
+            border-radius: 60px;
+            backdrop-filter: blur(4px);
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .card {
+            background: #1e4a76;
+            border-radius: 24px;
+            padding: 1.8rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 12px 25px rgba(0, 0, 0, 0.25);
+            transition: transform 0.2s, box-shadow 0.2s;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+        }
+
+        .card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 18px 32px rgba(0, 0, 0, 0.3);
+            background: #235e8f;
+        }
+
+        h2 {
+            font-size: 1.7rem;
+            margin-bottom: 1.2rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 3px solid #ffb347;
+            display: inline-block;
+            letter-spacing: -0.3px;
+        }
+
+        .form-inline {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 25px;
+            align-items: center;
+        }
+
+        input, select, button {
+            padding: 12px 18px;
+            font-size: 0.95rem;
+            border-radius: 40px;
+            border: none;
+            outline: none;
+            font-weight: 500;
+            transition: 0.2s;
+        }
+
+        input, select {
+            background: #f0f7ff;
+            color: #0a2e44;
+            flex: 1 1 200px;
+            border: 1px solid transparent;
+        }
+
+        input:focus, select:focus {
+            border-color: #ffb347;
+            box-shadow: 0 0 0 2px rgba(255, 180, 71, 0.3);
+            background: white;
+        }
+
+        button {
+            background: #ffb347;
+            color: #1e3a5f;
+            cursor: pointer;
+            font-weight: bold;
+            border: none;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+        }
+
+        button:hover {
+            background: #ff9e1f;
+            transform: scale(1.02);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+            margin-top: 15px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #0f3c60;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+
+        th {
+            background: #0c3554;
+            padding: 14px 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #ffdeae;
+        }
+
+        td {
+            padding: 12px 8px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+        }
+
+        tr:hover td {
+            background: #1f5582;
+        }
+
+        .copias {
+            font-weight: bold;
+            color: #ffd966;
+            font-size: 1.1rem;
+        }
+
+        .vigente {
+            background: #2a7f49;
+            border-radius: 30px;
+            font-weight: bold;
+            padding: 4px 12px;
+            display: inline-block;
+        }
+
+        .vencido {
+            background: #b33b2c;
+            border-radius: 30px;
+            font-weight: bold;
+            padding: 4px 12px;
+            display: inline-block;
+        }
+
+        .btn-return {
+            background: #2e7d64;
+            padding: 6px 16px;
+            font-size: 0.85rem;
+            border-radius: 40px;
+            color: white;
+        }
+
+        .btn-return:hover {
+            background: #1f5e4a;
+            transform: none;
+        }
+
+        .mensaje {
+            background: rgba(0, 0, 0, 0.7);
+            padding: 12px 20px;
+            border-radius: 40px;
+            margin-bottom: 25px;
+            text-align: center;
+            font-weight: bold;
+            backdrop-filter: blur(4px);
+            border-left: 5px solid #ffb347;
+            transition: 0.3s;
+        }
+
+        @media (max-width: 700px) {
+            body { padding: 15px; }
+            .card { padding: 1.2rem; }
+            h1 { font-size: 1.8rem; }
+            h2 { font-size: 1.3rem; }
+            button, input, select { width: 100%; }
+            .form-inline { flex-direction: column; }
+            th, td { font-size: 0.85rem; padding: 8px 4px; }
+        }
+
+        .empty-row td {
+            text-align: center;
+            color: #ccc;
+            font-style: italic;
+        }
+        button:active { transform: scale(0.98); }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>📚 Biblioteca Digital</h1>
+    <div id="mensajeGlobal" class="mensaje" style="display: none;"></div>
+
+    <!-- Panel Estudiantes -->
+    <div class="card">
+        <h2>👨‍🎓 Gestión de Estudiantes</h2>
+        <div class="form-inline">
+            <input type="text" id="nombreEstudiante" placeholder="Nombre completo" autocomplete="off">
+            <button id="btnAddEstudiante">➕ Añadir Estudiante</button>
+        </div>
+        <div class="table-responsive">
+            <table id="tablaEstudiantes">
+                <thead><tr><th>#</th><th>Nombre</th></tr></thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Panel Libros -->
+    <div class="card">
+        <h2>📖 Inventario de Libros</h2>
+        <div class="form-inline">
+            <input type="text" id="tituloLibro" placeholder="Título del libro" autocomplete="off">
+            <input type="number" id="copiasLibro" placeholder="Copias" min="1" value="1">
+            <button id="btnAddLibro">➕ Añadir / Agregar copias</button>
+        </div>
+        <div class="table-responsive">
+            <table id="tablaLibros">
+                <thead><tr><th>#</th><th>Título</th><th>Copias disponibles</th></tr></thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Préstamo normal (hoy) -->
+    <div class="card">
+        <h2>📅 Nuevo Préstamo (Hoy)</h2>
+        <div class="form-inline">
+            <select id="selectEstudianteNormal"></select>
+            <select id="selectLibroNormal"></select>
+            <button id="btnPrestamoNormal">📘 Registrar Préstamo</button>
+        </div>
+    </div>
+
+    <!-- Préstamo con fecha pasada (vencido) -->
+    <div class="card">
+        <h2>⚠️ Préstamo con Fecha Pasada</h2>
+        <div class="form-inline">
+            <select id="selectEstudianteVencido"></select>
+            <select id="selectLibroVencido"></select>
+            <input type="date" id="fechaVencido" required>
+            <button id="btnPrestamoVencido">⚠️ Registrar Vencido</button>
+        </div>
+    </div>
+
+    <!-- Lista de préstamos -->
+    <div class="card">
+        <h2>📋 Préstamos Activos</h2>
+        <div class="table-responsive">
+            <table id="tablaPrestamos">
+                <thead><tr><th>Estudiante</th><th>Libro</th><th>Fecha préstamo</th><th>Estado</th><th>Acción</th></tr></thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    // ---------- DATA (persistencia en localStorage) ----------
+    let estudiantes = [];
+    let libros = [];      // cada libro: { titulo, copias }
+    let prestamos = [];   // cada préstamo: { estudiante, libro, fecha }
+
+    // Cargar datos desde localStorage
+    function loadData() {
+        const storedEst = localStorage.getItem('biblioteca_estudiantes');
+        const storedLib = localStorage.getItem('biblioteca_libros');
+        const storedPres = localStorage.getItem('biblioteca_prestamos');
+        if (storedEst) estudiantes = JSON.parse(storedEst);
+        if (storedLib) libros = JSON.parse(storedLib);
+        if (storedPres) prestamos = JSON.parse(storedPres);
+    }
+
+    function saveData() {
+        localStorage.setItem('biblioteca_estudiantes', JSON.stringify(estudiantes));
+        localStorage.setItem('biblioteca_libros', JSON.stringify(libros));
+        localStorage.setItem('biblioteca_prestamos', JSON.stringify(prestamos));
+    }
+
+    // Mostrar mensaje flotante
+    function mostrarMensaje(texto, esError = false) {
+        const msgDiv = document.getElementById('mensajeGlobal');
+        msgDiv.textContent = texto;
+        msgDiv.style.display = 'block';
+        msgDiv.style.background = esError ? 'rgba(180, 50, 50, 0.85)' : 'rgba(0, 0, 0, 0.75)';
+        msgDiv.style.borderLeftColor = esError ? '#ff8866' : '#ffb347';
+        setTimeout(() => {
+            msgDiv.style.opacity = '0';
+            setTimeout(() => {
+                msgDiv.style.display = 'none';
+                msgDiv.style.opacity = '1';
+            }, 300);
+        }, 2800);
+    }
+
+    // Actualizar TODAS las tablas y selects
+    function refreshUI() {
+        refreshEstudiantesTable();
+        refreshLibrosTable();
+        refreshSelects();
+        refreshPrestamosTable();
+        saveData();
+    }
+
+    function refreshEstudiantesTable() {
+        const tbody = document.querySelector('#tablaEstudiantes tbody');
+        tbody.innerHTML = '';
+        if (estudiantes.length === 0) {
+            tbody.innerHTML = '<tr class="empty-row"><td colspan="2">📌 No hay estudiantes registrados</td></tr>';
+        } else {
+            estudiantes.forEach((e, idx) => {
+                const row = tbody.insertRow();
+                row.insertCell(0).textContent = idx + 1;
+                row.insertCell(1).textContent = e;
+            });
+        }
+    }
+
+    function refreshLibrosTable() {
+        const tbody = document.querySelector('#tablaLibros tbody');
+        tbody.innerHTML = '';
+        if (libros.length === 0) {
+            tbody.innerHTML = '<tr class="empty-row"><td colspan="3">📌 No hay libros en el inventario</td></tr>';
+        } else {
+            libros.forEach((lib, idx) => {
+                const row = tbody.insertRow();
+                row.insertCell(0).textContent = idx + 1;
+                row.insertCell(1).textContent = lib.titulo;
+                const cellCopias = row.insertCell(2);
+                cellCopias.textContent = lib.copias;
+                cellCopias.className = 'copias';
+            });
+        }
+    }
+
+    // actualizar selects de estudiantes y libros (solo disponibles con copias >0 para préstamos)
+    function refreshSelects() {
+        const selectEstNormal = document.getElementById('selectEstudianteNormal');
+        const selectEstVenc = document.getElementById('selectEstudianteVencido');
+        const selectLibNormal = document.getElementById('selectLibroNormal');
+        const selectLibVenc = document.getElementById('selectLibroVencido');
+
+        // Limpiar y llenar estudiantes
+        [selectEstNormal, selectEstVenc].forEach(sel => {
+            sel.innerHTML = '<option value="">-- Seleccionar estudiante --</option>';
+            estudiantes.forEach(est => {
+                const opt = document.createElement('option');
+                opt.value = est;
+                opt.textContent = est;
+                sel.appendChild(opt);
+            });
+        });
+
+        // Libros disponibles (con copias > 0)
+        const librosDisponibles = libros.filter(lib => lib.copias > 0);
+        [selectLibNormal, selectLibVenc].forEach(sel => {
+            sel.innerHTML = '<option value="">-- Seleccionar libro --</option>';
+            librosDisponibles.forEach(lib => {
+                const opt = document.createElement('option');
+                opt.value = lib.titulo;
+                opt.textContent = `${lib.titulo} (${lib.copias} disp.)`;
+                sel.appendChild(opt);
+            });
+        });
+    }
+
+    // calcular estado y días para préstamos
+    function getEstadoPrestamo(fechaPrestamo) {
+        const hoy = new Date();
+        hoy.setHours(0, 0, 0, 0);
+        const fecha = new Date(fechaPrestamo);
+        fecha.setHours(0, 0, 0, 0);
+        const diffTime = hoy - fecha;
+        const diffDias = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+        const vencido = diffDias > 15;
+        return { vigente: !vencido, dias: diffDias, vencido };
+    }
+
+    function refreshPrestamosTable() {
+        const tbody = document.querySelector('#tablaPrestamos tbody');
+        tbody.innerHTML = '';
+        if (prestamos.length === 0) {
+            tbody.innerHTML = '<tr class="empty-row"><td colspan="5">📭 No hay préstamos registrados</td></tr>';
+            return;
+        }
+
+        prestamos.forEach((p, index) => {
+            const { vigente, dias, vencido } = getEstadoPrestamo(p.fecha);
+            const estadoTexto = vencido ? `🔴 Vencido (${dias} días)` : `🟢 Vigente`;
+            const estadoClase = vencido ? 'vencido' : 'vigente';
+            const row = tbody.insertRow();
+            row.insertCell(0).textContent = p.estudiante;
+            row.insertCell(1).textContent = p.libro;
+            row.insertCell(2).textContent = p.fecha;
+            const estadoCell = row.insertCell(3);
+            estadoCell.innerHTML = `<span class="${estadoClase}">${estadoTexto}</span>`;
+            const accionCell = row.insertCell(4);
+            const btnReturn = document.createElement('button');
+            btnReturn.textContent = '↩️ Devolver';
+            btnReturn.className = 'btn-return';
+            btnReturn.onclick = () => devolverPrestamo(index);
+            accionCell.appendChild(btnReturn);
+        });
+    }
+
+    // Devolver préstamo (incrementa copias del libro y elimina préstamo)
+    function devolverPrestamo(prestamoIndex) {
+        const prestamo = prestamos[prestamoIndex];
+        if (!prestamo) {
+            mostrarMensaje('Préstamo no encontrado', true);
+            return;
+        }
+        const libroTitulo = prestamo.libro;
+        const libroExistente = libros.find(l => l.titulo === libroTitulo);
+        if (libroExistente) {
+            libroExistente.copias++;
+        } else {
+            mostrarMensaje('Error: libro original no existe en inventario', true);
+            return;
+        }
+        prestamos.splice(prestamoIndex, 1);
+        mostrarMensaje(`✅ Libro "${libroTitulo}" devuelto correctamente.`);
+        refreshUI();
+    }
+
+    // Lógica para agregar estudiante
+    function agregarEstudiante() {
+        const nombreInput = document.getElementById('nombreEstudiante');
+        const nombre = nombreInput.value.trim();
+        if (nombre === '') {
+            mostrarMensaje('❌ Escriba un nombre válido', true);
+            return;
+        }
+        estudiantes.push(nombre);
+        nombreInput.value = '';
+        mostrarMensaje(`✅ Estudiante "${nombre}" agregado.`);
+        refreshUI();
+    }
+
+    // Agregar libro (si existe suma copias)
+    function agregarLibro() {
+        const tituloInput = document.getElementById('tituloLibro');
+        const copiasInput = document.getElementById('copiasLibro');
+        const titulo = tituloInput.value.trim();
+        let copias = parseInt(copiasInput.value);
+        if (titulo === '' || isNaN(copias) || copias < 1) {
+            mostrarMensaje('❌ Título válido y al menos 1 copia', true);
+            return;
+        }
+        const existente = libros.find(l => l.titulo.toLowerCase() === titulo.toLowerCase());
+        if (existente) {
+            existente.copias += copias;
+            mostrarMensaje(`📚 Se añadieron ${copias} copia(s) a "${titulo}". Total: ${existente.copias}`);
+        } else {
+            libros.push({ titulo: titulo, copias: copias });
+            mostrarMensaje(`📖 Nuevo libro "${titulo}" con ${copias} copia(s).`);
+        }
+        tituloInput.value = '';
+        copiasInput.value = '1';
+        refreshUI();
+    }
+
+    // Registrar préstamo (fecha actual o personalizada)
+    function registrarPrestamo(esVencido = false) {
+        let estudiante, libroTitulo, fecha;
+        if (esVencido) {
+            const selectEst = document.getElementById('selectEstudianteVencido');
+            const selectLib = document.getElementById('selectLibroVencido');
+            const fechaInput = document.getElementById('fechaVencido');
+            estudiante = selectEst.value;
+            libroTitulo = selectLib.value;
+            fecha = fechaInput.value;
+            if (!estudiante || !libroTitulo || !fecha) {
+                mostrarMensaje('⚠️ Complete todos los campos (estudiante, libro y fecha)', true);
+                return;
+            }
+        } else {
+            const selectEst = document.getElementById('selectEstudianteNormal');
+            const selectLib = document.getElementById('selectLibroNormal');
+            estudiante = selectEst.value;
+            libroTitulo = selectLib.value;
+            if (!estudiante || !libroTitulo) {
+                mostrarMensaje('⚠️ Seleccione estudiante y libro disponible', true);
+                return;
+            }
+            // fecha actual formato YYYY-MM-DD
+            const hoy = new Date();
+            fecha = hoy.toISOString().slice(0,10);
+        }
+
+        // Validar que el libro aún tenga copias (por si cambió entre carga)
+        const libroIndex = libros.findIndex(l => l.titulo === libroTitulo);
+        if (libroIndex === -1) {
+            mostrarMensaje('❌ El libro ya no existe en el sistema', true);
+            refreshUI();
+            return;
+        }
+        if (libros[libroIndex].copias <= 0) {
+            mostrarMensaje(`❌ No hay copias disponibles de "${libroTitulo}"`, true);
+            refreshUI();
+            return;
+        }
+
+        // Descontar copia
+        libros[libroIndex].copias--;
+        // Registrar préstamo
+        prestamos.push({
+            estudiante: estudiante,
+            libro: libroTitulo,
+            fecha: fecha
+        });
+        const mensaje = esVencido ? `⚠️ Préstamo vencido registrado (${fecha})` : `📘 Préstamo de "${libroTitulo}" registrado hoy`;
+        mostrarMensaje(mensaje);
+        refreshUI();
+    }
+
+    // Eventos y carga inicial
+    document.addEventListener('DOMContentLoaded', () => {
+        loadData();
+        // si no hay datos de ejemplo, agregar algunos para demostración
+        if (estudiantes.length === 0) {
+            estudiantes = ['Ana García', 'Carlos López', 'María Fernández'];
+        }
+        if (libros.length === 0) {
+            libros = [
+                { titulo: 'Cien años de soledad', copias: 3 },
+                { titulo: 'El principito', copias: 2 },
+                { titulo: '1984', copias: 1 }
+            ];
+        }
+        if (prestamos.length === 0) {
+            // préstamo de ejemplo vigente y otro vencido para demostración
+            const hoy = new Date();
+            const hace20Dias = new Date();
+            hace20Dias.setDate(hoy.getDate() - 20);
+            prestamos = [
+                { estudiante: 'Ana García', libro: 'Cien años de soledad', fecha: hoy.toISOString().slice(0,10) },
+                { estudiante: 'Carlos López', libro: '1984', fecha: hace20Dias.toISOString().slice(0,10) }
+            ];
+            // Ajustar copias según los préstamos iniciales (restar copias)
+            const libro1 = libros.find(l => l.titulo === 'Cien años de soledad');
+            if (libro1) libro1.copias = Math.max(0, libro1.copias - 1);
+            const libro2 = libros.find(l => l.titulo === '1984');
+            if (libro2) libro2.copias = Math.max(0, libro2.copias - 1);
+        }
+        saveData();
+        refreshUI();
+
+        // Eventos botones
+        document.getElementById('btnAddEstudiante').addEventListener('click', agregarEstudiante);
+        document.getElementById('btnAddLibro').addEventListener('click', agregarLibro);
+        document.getElementById('btnPrestamoNormal').addEventListener('click', () => registrarPrestamo(false));
+        document.getElementById('btnPrestamoVencido').addEventListener('click', () => registrarPrestamo(true));
+    });
+</script>
+</body>
+</html>
